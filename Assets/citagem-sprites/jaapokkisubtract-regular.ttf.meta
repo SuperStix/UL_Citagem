@@ -1,0 +1,24 @@
+fileFormatVersion: 2
+guid: cc18e5e9003cb488385b8ee49442f6fe
+timeCreated: 1525832203
+licenseType: Free
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: JaapokkisubtractRegular
+  fontNames:
+  - JaapokkisubtractRegular
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 5063677e42e11493e849455501c3dd4e, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
