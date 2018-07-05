@@ -86,7 +86,7 @@ public class ScrollSnap : UIBehaviour, IDragHandler, IEndDragHandler {
 
     public void comingFromSkip(bool _isfromskip){
         int count = LayoutElementCount();
-        //Debug.Log("" + count);
+        Debug.Log("" + count);
         //int count = 8;
 
         SetContentSize(count);
@@ -134,13 +134,13 @@ public class ScrollSnap : UIBehaviour, IDragHandler, IEndDragHandler {
 		cellIndex += 1;
 		element.transform.SetParent(content.transform, false);
 		element.transform.SetAsFirstSibling();
-		SetContentSize(8);
+		SetContentSize(10);
 		content.anchoredPosition = new Vector2(content.anchoredPosition.x - cellSize.x, content.anchoredPosition.y);
 	}
 	
 	public void ShiftLayoutElement() {
 		Destroy(GetComponentInChildren<LayoutElement>().gameObject);
-		SetContentSize(8 - 1);
+		SetContentSize(10 - 1);
 		cellIndex -= 1;
 		content.anchoredPosition = new Vector2(content.anchoredPosition.x + cellSize.x, content.anchoredPosition.y);
 	}
