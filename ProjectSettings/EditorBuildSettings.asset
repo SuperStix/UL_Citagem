@@ -11,3 +11,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/mainGame2.unity
     guid: 15bbddf268353441392a8ffce5c6f23e
+  - enabled: 1
+    path: Assets/Scenes/playAgain.unity
+    guid: e78e63fb3817ac646803e2d02486873f
+  - enabled: 1
+    path: Assets/Scenes/edetailer.unity
+    guid: 5e293fa81f420ae4e91c10a7f690d547
+  - enabled: 1
+    path: Assets/Scenes/edetailer2.unity
+    guid: ff43a9bffd10f2c44a90b14a50d6b7b5

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
+
 
 public class TimeManager : MonoBehaviour {
 
@@ -27,8 +29,11 @@ public class TimeManager : MonoBehaviour {
     int last_score;
     private SoundManager soundManager;
     private ScrollSnap scrollSnap;
+
+
     private void Awake()
     {
+        
         shapesManager = GameObject.Find("ShapesManager").GetComponent<ShapesManager>();
         soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
         //scrollSnap = GameObject.Find("Scroll View").GetComponent<ScrollSnap>();
@@ -36,12 +41,18 @@ public class TimeManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        if (SceneManager.GetActiveScene().name == "playAgain")
+            isGameStarted = true;
+        else
+            isGameStarted = false;
+        
         DOTween.Init();//init dot tween library
         sv_AtEndGame.SetActive(false);
         go_hint.SetActive(true);
-        isGameStarted = false;
         mScore = "";
-        soundManager.PlaySoundSlide2();
+
+        if (SceneManager.GetActiveScene().name == "mainGame2")
+            soundManager.PlaySoundSlide2();
 
         img_box.GetComponent<Animator>().enabled = false;  
 	}
@@ -62,7 +73,6 @@ public class TimeManager : MonoBehaviour {
             {
                     TimeText.text = GetTime();
                     GameTimer -= Time.deltaTime;
-
             }
         }
 
@@ -117,7 +127,8 @@ public class TimeManager : MonoBehaviour {
     private void ProceedToShowScore()
     {
         mScore = shapesManager.ScoreText.text;
-        text_player_score.text = "You've got " + mScore + " points!";
+        PlayerPrefs.SetInt("Score", int.Parse(mScore));
+        text_player_score.text = "You've got " + PlayerPrefs.GetInt("Score") + " points!";
         go_MainGame.SetActive(false);
         sv_AfterGame.SetActive(true);
         setTimerVisibility(false);
@@ -144,7 +155,8 @@ public class TimeManager : MonoBehaviour {
     }
 
     public void startGame(bool c){
-            isGameStarted = c;
+        isGameStarted = c;
+        GameTimer = 30.5f;
     }
 
 
@@ -173,5 +185,11 @@ public class TimeManager : MonoBehaviour {
         }
 
         return System.String.Format("{0}:{1}", minute, second);
+    }
+
+
+    public void PlayAgain()
+    {
+       SceneManager.LoadScene("playAgain");
     }
 }

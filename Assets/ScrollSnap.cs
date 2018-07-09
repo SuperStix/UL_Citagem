@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System;
 using System.Linq;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(ScrollRect))]
@@ -22,8 +23,10 @@ public class ScrollSnap : UIBehaviour, IDragHandler, IEndDragHandler {
 	public int actualIndex;
     public GameObject bigshot1;
     public GameObject bigshot2;
+    public GameObject element1, element2;
+    public GameObject content_ui;
     public bool isPage4 = false; //check if its page4
-    private bool isFromSkip = false;//check if coming from skip
+    private bool isFromSkip;//check if coming from skip
 	int cellIndex;
 	ScrollRect scrollRect;
 	CanvasGroup canvasGroup;
@@ -37,10 +40,21 @@ public class ScrollSnap : UIBehaviour, IDragHandler, IEndDragHandler {
 	Vector2 targetPosition;
     public int numberOfPages;
     private SoundManager soundManager;
+    public Text mScore;
+
 	protected override void Awake() {
-		base.Awake();
-		actualIndex = startingIndex;
-		cellIndex = startingIndex;
+        base.Awake();
+        if(SceneManager.GetActiveScene().name == "edetailer2")
+        {
+            actualIndex = 2;
+            cellIndex = 2;
+        }
+        else
+        {
+            actualIndex = startingIndex;
+            cellIndex = startingIndex;
+        }
+		
 		this.onLerpComplete = new OnLerpCompleteEvent();
 		this.onRelease = new OnReleaseEvent();
 		this.scrollRect = GetComponent<ScrollRect>();
@@ -59,12 +73,65 @@ public class ScrollSnap : UIBehaviour, IDragHandler, IEndDragHandler {
 		}
 
         soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
+
+        //if(!isFromSkip && (SceneManager.GetActiveScene().name == "mainGame2" || SceneManager.GetActiveScene().name == "playAgain"))
+        //{
+        //    Debug.Log("test");
+        //    soundManager.PlaySoundSlide10();
+        //}
+        
 	}
 
-    public void reCalculateEverything(){
+    private void Update()
+    {
+        if (SceneManager.GetActiveScene().name == "edetailer")
+        {
+            numberOfPages = 7;
+        }
+        else if (SceneManager.GetActiveScene().name == "edetailer2")
+        {
+            numberOfPages = 9;
+            //Invoke("LoadElement", 1f);
+        }
+
+        if (actualIndex == numberOfPages)
+        {
+            Invoke("ChangeScene", 0.2f);
+        }
         
-        actualIndex = startingIndex;
-        cellIndex = startingIndex;
+
+    }
+
+    void LoadElement()
+    {
+        element1.SetActive(true);
+        element2.SetActive(true);
+    }
+
+    void ChangeScene()
+    {
+        if (numberOfPages == 7)
+        {
+            SceneManager.LoadScene(3);
+        }
+        else
+        {
+            SceneManager.LoadScene(4);
+        }
+        
+    }
+
+    public void reCalculateEverything(){
+        if (SceneManager.GetActiveScene().name == "edetailer2")
+        {
+            actualIndex = 2;
+            cellIndex = 2;
+        }
+        else
+        {
+            actualIndex = startingIndex;
+            cellIndex = startingIndex;
+        }
         this.onLerpComplete = new OnLerpCompleteEvent();
         this.onRelease = new OnReleaseEvent();
         this.scrollRect = GetComponent<ScrollRect>();
@@ -86,7 +153,7 @@ public class ScrollSnap : UIBehaviour, IDragHandler, IEndDragHandler {
 
     public void comingFromSkip(bool _isfromskip){
         int count = LayoutElementCount();
-        Debug.Log("" + count);
+        //Debug.Log("" + count);
         //int count = 8;
 
         SetContentSize(count);
@@ -95,15 +162,26 @@ public class ScrollSnap : UIBehaviour, IDragHandler, IEndDragHandler {
 
     protected override void Start()
     {
-        numberOfPages = GameObject.Find("InitialGame").GetComponent<TimeManager>().numberOfDetailers -1;
+        numberOfPages = GameObject.Find("InitialGame").GetComponent<TimeManager>().numberOfDetailers - 1;
 
-        if (actualIndex == 0 && !isFromSkip)
+        if(!isFromSkip && (SceneManager.GetActiveScene().name == "mainGame2" || SceneManager.GetActiveScene().name == "playAgain"))
         {
+            Debug.Log("test");
             soundManager.PlaySoundSlide10();
         }
+
+        if (SceneManager.GetActiveScene().name == "edetailer2")
+        {
+            cellIndex = 2;
+            actualIndex = 2;
+            content_ui.transform.localPosition = new Vector3(-4358f, 0f, 0f);
+        }
+
+        mScore.text = "You've got " + PlayerPrefs.GetInt("Score") + " points!";
+
     }
 
-    void LateUpdate() {
+        void LateUpdate() {
 		if(isLerping) {
 			LerpToElement();
 			if(ShouldStopLerping()) {
@@ -134,13 +212,13 @@ public class ScrollSnap : UIBehaviour, IDragHandler, IEndDragHandler {
 		cellIndex += 1;
 		element.transform.SetParent(content.transform, false);
 		element.transform.SetAsFirstSibling();
-		SetContentSize(10);
+		SetContentSize(9);
 		content.anchoredPosition = new Vector2(content.anchoredPosition.x - cellSize.x, content.anchoredPosition.y);
 	}
 	
 	public void ShiftLayoutElement() {
 		Destroy(GetComponentInChildren<LayoutElement>().gameObject);
-		SetContentSize(10 - 1);
+		SetContentSize(9 - 1);
 		cellIndex -= 1;
 		content.anchoredPosition = new Vector2(content.anchoredPosition.x + cellSize.x, content.anchoredPosition.y);
 	}
@@ -152,7 +230,7 @@ public class ScrollSnap : UIBehaviour, IDragHandler, IEndDragHandler {
 	
 	public int CurrentIndex {
 		get {
-            int count = 8;
+            int count = 9;
 			int mod = actualIndex % count;
 			return mod >= 0 ? mod : count + mod;
 		}
@@ -224,17 +302,15 @@ public class ScrollSnap : UIBehaviour, IDragHandler, IEndDragHandler {
 		isLerping = true;
 
 
-        if (actualIndex == 0 && !isFromSkip)
+        if (actualIndex == 0 && !isFromSkip && SceneManager.GetActiveScene().name != "edetailer")
         {
             soundManager.PlaySoundSlide10();
         }
-        else if (actualIndex == numberOfPages)
-        {
+        if(actualIndex == numberOfPages - 3){
+            isPage4 = true;
             soundManager.PlaySoundSlide26();
         }
-        else if(actualIndex == numberOfPages - 4){
-            isPage4 = true;
-        }else
+        else
         {
             isPage4 = false;
         }
